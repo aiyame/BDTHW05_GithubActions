@@ -14,22 +14,36 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.10]  # версии Python, с которыми вы хотите тестировать
+        python-version: [3.10, 3.11]  # Используем последние стабильные версии Python
 
     steps:
+      # Шаг клонирования репозитория
       - name: Checkout repository
-        uses: actions/checkout@v3  # Шаг для клонирования репозитория
+        uses: actions/checkout@v3
 
+      # Очистка кэша Python, если есть конфликты с версией
+      - name: Clear Python cache
+        run: |
+          sudo rm -rf /opt/hostedtoolcache/Python
+
+      # Установка Python версии, указанной в матрице
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}  # Устанавливаем нужную версию Python
+          python-version: ${{ matrix.python-version }}
 
+      # Проверка доступных версий Python (диагностика, если нужно)
+      - name: List available Python versions
+        run: |
+          sudo find /opt/hostedtoolcache/Python
+
+      # Установка зависимостей из requirements.txt (если есть зависимости)
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt  # Устанавливаем зависимости
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+      # Запуск всех тестов
       - name: Run tests
         run: |
-          python -m unittest discover  # Запускаем все тесты, используя unittest
+          python -m unittest discover
