@@ -9,7 +9,7 @@ on:
       - section04
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     strategy:
@@ -17,6 +17,7 @@ jobs:
         python-version: [3.10, 3.11]  # версии Python, с которыми вы хотите тестировать
 
     steps:
+      - name: Checkout repository
       - uses: actions/checkout@v3  # Шаг для клонирования репозитория
 
       - name: Set up Python
